@@ -1,0 +1,201 @@
+\part{快速入门}
+\section{快速运行一个模式实例}\label{chapter01}
+
+\subsection{代码基本结构}
+
+CoLM包含三个主要的程序：制作地表数据、制作初始场数据和运行主程序。三个程序是相互独立的，一般情况下需按顺序依次执行。
+
+制作地表数据是指构建模式网格和次网格单元，以及由高分辨的原始数据聚合得到模式单元上的地表属性。CoLM可使用经纬度单元、非结构单元、流域单元和单点四种模式网格单元，网格单元进一步再细分为植被、城市、湿地、冰川和水体五大类次网格单元，其中，植被次网格单元可选择地表覆盖类型、植被功能型和植物群落三种网格植被结构中的一种进行表征。次网格是CoLM计算模拟的基本结构单元，在运行主程序前，需首先由高分辨率的原始数据进行升尺度获取模式单元上的地表属性。原始地表数据通常为1千米及以下的高分辨率数据，包括地表覆盖类型、植被结构及属性、土壤属性、高程数据、水文学数据和城市数据等。
+
+制作初始场数据是指构建模式的初始状态。初始状态分为冷启动(Cold Start)和热启动(Warm Start)两种，其中，冷启动指的是设定一个物理上合理的土壤水、土壤温度和积雪状态等数值，热启动指的是由外部数据读入已经运行过一段时间后的模式状态。冷启动设定简单，不需要额外的数据，但通常主程序需运行比热启动更长的时间，才能达到较为平衡的状态。
+
+主程序对陆面主要的物理、化学、生物和人类活动等过程进行时间积分预报。主程序分离线运行和与大气模式耦合运行两种情况：离线运行时，需准备好大气驱动数据作为输入；耦合运行时，模式以一定的频率从大气模式在线获取驱动数据，同时向大气模式反馈陆表的状态和通量。此外，根据模式功能，可能还需要气溶胶、氮沉降和臭氧等数据作为输入，在运行时读入。
+
+CoLM源代码的目录结构见表~\ref{subdirectories}。
+\begin{table}[!htbp]\small
+\caption{CoLM源代码目录} \label{subdirectories}
+\centering \renewcommand{\arraystretch}{1.5}
+\begin{threeparttable}
+\begin{tabular}{cp{0.8\textwidth}}
+\toprule
+\textbf{目录名称} & \textbf{说明} \\
+\midrule
+\texttt{include} & 包含编译选项\texttt{Makeoptions}文件和预处理宏定义文件\texttt{define.h} \\
+\texttt{preprocess} & 预处理程序，进行高分辨率地表源数据的预处理和离线大气驱动的下载和预处理 \\
+\texttt{share} & 包含模式中的部分常量、模式数据结构模块、共享的函数和输入输出模块等 \\
+\texttt{mksrfdata} & 制作地表数据；生成可执行文件\texttt{mksrfdata.x}；可独立运行 \\
+\texttt{mkinidata} & 制作初始场数据；生成可执行文件\texttt{mkinidata.x}；需在制作完地表数据后运行\\
+\texttt{main} & 模式主程序；生成可执行文件\texttt{colm.x}；需在制作完地表数据和初始场数据后运行\\
+\texttt{CaMa} & CaMa-Flood\tnote{1} ~径流模型代码和数据 \\
+\texttt{run} & 存放可执行文件和namelist文件 \\
+\texttt{postprocess} & 后处理程序，主要用于将分块输出的变量文件合并成一个整体 \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\footnotesize
+\item[1] CaMa-Flood (Catchment-based Macro-scale Floodplain) 是模拟大陆尺度河道径流过程的水动力学模型。
+\end{tablenotes} 
+\end{threeparttable}
+\end{table}
+
+\subsection{编译和运行}\label{comprun}
+
+CoLM的编译和运行分为软件环境的配置、数据的准备和模式运行三个主要步骤。假设代码放置的根目录为 \texttt{\$CoLMRoot}\footnote{\texttt{\$CoLMRoot}为\texttt{Shell}编程中变量值的写法，其中\texttt{CoLMRoot}为变量名，变量名前加\$指变量的值。}.
+
+\textbf{第1步}，软件环境的配置。
+
+CoLM在Linux操作系统下运行，其软件需求为：
+\begin{quote}
+\begin{itemize}
+\setlength{\itemsep}{0pt}
+\setlength{\parsep}{0pt}
+\setlength{\parskip}{0pt}
+    \item Fortran编译器；
+    \item MPI（Message Passing Interface）软件包 \footnote{MPI是消息传递接口规范，CoLM中使用满足这些规范的软件库（如MPICH）来实现多个计算核心的并行。}；
+    \item NetCDF（Network Common Data Form）软件包 \footnote{NetCDF是一个数据格式软件库，支持创建和读写以数组为内容的科学数据文件。}；
+    \item LAPACK（Linear Algebra PACKage）软件包\footnote{LAPACK提供了求解线性方程组、线性方程组的最小二乘解、特征值问题和奇异值问题的程序}；
+    \item BLAS（Basic Linear Algebra Subprograms）软件包 \footnote{BLAS是执行基本向量和矩阵运算的标准代码库。}。
+\end{itemize}
+\end{quote}
+
+以下文件内容给出了一个典型环境下的软件配置（使用GNU编译器），文件位于\texttt{\$CoLMRoot/include/\allowbreak Makeopitons}：
+\begin{lstlisting}[language=bash, basicstyle=\linespread{1.2}\footnotesize\ttfamily, commentstyle=\color{olive}, numbers=left, numberstyle=\tiny, xleftmargin=1.5em,xrightmargin=0em, aboveskip=1em]
+# An example for file '$CoLMRoot/include/Makeoptions'.
+
+# 设置编译器
+FF = mpif90
+
+# 设置NetCDF软件包的路径
+NETCDF_LIB = /usr/lib/x86_64-linux-gnu
+NETCDF_INC = /usr/include
+
+MOD_CMD = -J
+
+FOPTS = -fdefault-real-8 -ffree-form -C -g -u -xcheck=stkovf \
+        -ffpe-trap=invalid,zero,overflow -fbounds-check      \
+        -mcmodel=medium -fbacktrace -fdump-core -cpp         \
+        -ffree-line-length-0
+
+INCLUDE_DIR = -I../include -I../share -I../mksrfdata  \ 
+              -I../mkinidata -I../main -I$(NETCDF_INC)
+LDFLAGS = -L$(NETCDF_LIB) -lnetcdff -lnetcdf -llapack -lblas
+
+\end{lstlisting}
+
+以上文件对编译器、NetCDF软件包的路径和编译选项等进行了配置。其中，编译器\texttt{mpif90}为系统默认的集成MPI环境的Fortran编译器，可在Linux系统中使用命令 \texttt{which mpif90} 查看其完整路径。文件中使用了NETCDF\_LIB和NETCDF\_INC两个变量对NetCDF软件包的路径进行了设置。LAPACK和BLAS是常用的软件包，这里并未对其路径进行设置，编译器会在系统默认的软件包路径中进行查找。通常来讲，用户只需确认编译器和NetCDF软件包的设置正确，即可对CoLM进行编译。
+
+\bigskip
+\textbf{第2步}，准备数据。
+
+CoLM的运行需要两个必要数据：地表属性数据和大气驱动数据。
+
+模式单元上的地表属性数据可由高分辨率的原始数据升尺度得到，也可直接使用预先制作好的数据。若使用原始数据升尺度，需准备好完整的原始数据，这些数据大多为全球1千米及以下分辨率的数据，体量较大。对一些常用的网格单元，如0.5度的经纬度网格，CoLM预先制作好了地表属性数据，可直接下载使用。
+
+当进行离线模拟时，还需准备大气驱动数据。CoLM支持十几种常见的离线驱动数据，这些数据可从其数据网站上下载，然后使用 \texttt{\$CoLMRoot/preprocess/Forcings} 目录下的对应预处理程序转换为CoLM可直接使用的数据。
+
+\bigskip
+\textbf{第3步}，运行模式。
+
+CoLM通过以下两个文件对一个模式实例进行设置，
+\begin{quote}
+\begin{enumerate}[label=\arabic*)]
+    \item \texttt{\$CoLMRoot/include/define.h}：模式主要模块和功能的选择或开关
+    \item \texttt{\$CoLMRoot/run/\$NamelistFile}：模式运行的具体设置
+\end{enumerate}
+\end{quote}
+
+一个最简单的\texttt{define.h}文件的示例如下，
+\begin{lstlisting}[language=fortran, basicstyle=\linespread{1.2}\footnotesize\ttfamily, commentstyle=\color{olive}, numbers=left, numberstyle=\tiny, xleftmargin=1.5em,xrightmargin=0em, aboveskip=1em]
+! 使用“经纬度网格”单元
+#define GRIDBASED
+! 使用“地表覆盖类型”表征次网格单元
+#define LULC_IGBP
+! 使用MPI进行并行加速
+#define USEMPI
+! 使用van Genuchten-Mualem土壤水模型
+#define  vanGenuchten_Mualem_SOIL_MODEL
+\end{lstlisting}
+
+以上文件设置模式使用经纬度网格、“地表覆盖类型”次网格、使用MPI软件进行并行加速和van Genuchten-Mualem土壤水模型。
+
+一个最简单的namelist文件示例如下，
+\begin{lstlisting}[language=fortran, basicstyle=\linespread{1.2}\footnotesize\ttfamily, commentstyle=\color{olive}, numbers=left, numberstyle=\tiny, xleftmargin=1.5em,xrightmargin=0em, aboveskip=1em]
+&nl_colm
+
+   ! 设定实例名称
+   DEF_CASE_NAME = 'GreaterBay_Grid_10km_IGBP_VG'
+
+   ! 设置模拟的区域
+   DEF_domain%edges = 20.0
+   DEF_domain%edgen = 25.0
+   DEF_domain%edgew = 109.0
+   DEF_domain%edgee = 118.0
+
+   ! 设置模拟的起止时间，预热的时间及重复次数
+   DEF_simulation_time%greenwich     = .TRUE.
+   DEF_simulation_time%start_year    = 2010
+   DEF_simulation_time%start_month   = 1
+   DEF_simulation_time%start_day     = 1
+   DEF_simulation_time%start_sec     = 0
+   DEF_simulation_time%end_year      = 2010
+   DEF_simulation_time%end_month     = 1
+   DEF_simulation_time%end_day       = 31
+   DEF_simulation_time%end_sec       = 86400
+   DEF_simulation_time%spinup_year   = 2010
+   DEF_simulation_time%spinup_month  = 1
+   DEF_simulation_time%spinup_day    = 10
+   DEF_simulation_time%spinup_sec    = 86400
+   DEF_simulation_time%spinup_repeat = 1
+
+   ! 设置模拟的时间步长
+   DEF_simulation_time%timestep     = 1800.
+
+   ! 设置数据路径
+   !  原始高分辨率地表属性数据路径
+   DEF_dir_rawdata = '/path/to/rawdata/'   
+   !  运行时需要用到的数据路径
+   DEF_dir_runtime = '/path/to/runtime/data/'   
+   !  输出数据存放的路径
+   DEF_dir_output  = '/path/to/output/directory'  
+
+   ! 设置经纬度网格单元分辨率
+   DEF_GRIDBASED_lon_res = 0.5
+   DEF_GRIDBASED_lat_res = 0.5
+
+   ! 设置驱动数据的namelist文件路径
+   DEF_forcing_namelist = '/path/to/forcing.nml'
+
+   ! 历史数据输出设置
+   DEF_HIST_lon_res = 0.5     ! 输出数据经向分辨率
+   DEF_HIST_lat_res = 0.5     ! 输出数据纬向分辨率
+   DEF_HIST_FREQ = 'DAILY'    ! 输出数据的日平均值
+   DEF_HIST_groupby = 'MONTH' ! 每月的数据放置在一个文件中
+   DEF_hist_vars_out_default = .TRUE. ! 默认输出所有变量
+
+   ! 重启动数据输出设置
+   DEF_WRST_FREQ = 'MONTHLY' ! 每月保存一次模式状态
+
+/
+\end{lstlisting}
+
+以上文件设置：模拟区域为覆盖大湾区的矩形区域；起止时间为2010年1月1日至2010年1月31日，其中前10天为预热时间；模拟的时间步长为半小时；模拟分辨率为0.5度；历史数据的输出分辨率为0.5度，默认输出所有变量的日平均值，且将每月的数据放置于一个文件内；每月保存一次模式状态用于重启动；同时，对输入输出数据进行了设置。
+
+完成软件环境的配置、数据的准备和模式实例的配置后，在\texttt{\$CoLMRoot}目录下通过执行以下命令进行CoLM的编译,
+\begin{quote}
+\begin{lstlisting}
+make
+\end{lstlisting}
+\end{quote}
+编译完成后，会在\texttt{\$CoLMRoot/run}目录下生成\texttt{mksrfdata.x}, \texttt{mkinidata.x}, \texttt{colm.x} 三个可执行文件，依次执行这三个文件进行地表数据的制作、初始场数据的制作和主程序的运行。例如，使用mpirun进行运行时，可依次执行
+\begin{quote}\label{runcolm}
+\begin{lstlisting}
+mpirun -np $np $CoLMRoot/run/mksrfdata.x $NamelistFile
+mpirun -np $np $CoLMRoot/run/mkinidata.x $NamelistFile
+mpirun -np $np $CoLMRoot/run/colm.x $NamelistFile
+\end{lstlisting}
+\end{quote}
+其中，\verb|$np| 为调用的进程数，\verb|$NamelistFile| 为配置模式实例的 namelist 文件。
+
+模式的输出数据包含分别为地表属性数据、模式状态数据和历史输出数据三部分，分别放置于输出目录的子文件夹 \texttt{landdata}，\texttt{restart} 和 \texttt{history}中。
+
+\clearpage

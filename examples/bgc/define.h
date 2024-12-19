@@ -1,18 +1,18 @@
-! 1. Spatial structure .
+! 1. Spatial structure.
 #define GRIDBASED
 
-! 2. Land subgrid type classification .
+! 2. Land subgrid type classification.
 #define LULC_IGBP_PFT
 
-! 3. Print debug information .
+! 3. Print debug information.
 #define CoLMDEBUG
-! Print range of variables .
+! Print range of variables.
 #define RangeCheck
 
-! 4. MPI parallelization is enabled .
+! 4. MPI parallelization is enabled.
 #define USEMPI
 
-! 5. Hydrological process options .
+! 5. Hydrological process options.
 #define vanGenuchten_Mualem_SOIL_MODEL
 
 ! 6. BGC model is used.

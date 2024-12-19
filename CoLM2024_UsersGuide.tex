@@ -1,0 +1,99 @@
+% !TEX encoding = UTF-8 Unicode
+\documentclass[a4paper,12pt,twoside]{article}
+\usepackage[left=2.5cm,right=2.5cm,top=3cm,bottom=3cm]{geometry}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[UTF8,heading=true,scheme=chinese]{ctex}
+\usepackage{fancyhdr}
+%\usepackage[nottoc]{tocbibind} % used to add bibliography to toc with correct bookmark and page number
+
+%\usepackage[T1]{fontenc}
+\newcommand{\arial}[1]{{\fontencoding{T1}\usefont{T1}{phv}{m}{n}{#1}}}
+\newcommand{\courier}[1]{{\fontencoding{T1}\usefont{T1}{pcr}{m}{n}{#1}}}
+\newcommand{\Times}[1]{{\fontencoding{T1}\usefont{T1}{ptm}{m}{n}{#1}}}
+\newcommand{\Rom}[1]{{\fontencoding{T1}\usefont{T1}{cmr}{m}{n}{#1}}}
+% \usepackage{wasysym}
+
+\input{CoLM.preamble}
+
+\setlength{\parskip}{0em}
+\setlength{\parindent}{2em}
+\setcounter{secnumdepth}{3}
+\usepackage{enumitem}
+\usepackage{wasysym}
+\usepackage{textcomp}
+\usepackage{rotating}
+\usepackage{amssymb}
+\usepackage{afterpage} % avoid blank page before landscape environment
+\usepackage{pdflscape}
+\usepackage{xr}
+\usepackage{color}
+\usepackage{textcomp}
+\usepackage{threeparttable}
+\usepackage{array}
+\usepackage{longtable} % for 'longtable' environment
+\usepackage{threeparttablex} % for 'ThreePartTable' environment
+\usepackage{makecell}
+\usepackage{listings}
+\definecolor{bg}{RGB}{240,240,240}
+
+\lstset{
+  basicstyle=\small\ttfamily,
+%  columns=flexible,
+  breaklines=true,
+  backgroundcolor=\color{bg},
+  frame = single,
+  frameround=tttt,
+  rulecolor=\color{bg}
+}
+\raggedbottom
+
+\usepackage{siunitx}
+
+\setmainfont{Times New Roman}
+
+\begin{document}
+
+\title{\huge {\bf 通用陆面模式2024版用户手册}\\
+\vspace{6mm}
+\fontsize {22}{24}
+\bf{ The Common Land Model Users' Guide}
+\fontsize {20}{23}
+ \vskip 2in
+}
+
+\author{
+ \large{ 中山大学 }\\[2ex]
+ {\bf 大气科学学院}
+ \vskip 2in
+ \upshape
+ \large
+ \vskip 0.5in
+ 2024年11月
+}
+
+\normallinespacing
+\maketitle
+
+% \listoftodos[待核查/修改列表]
+\preface
+
+\clearpage 
+\pagestyle{fancy}
+
+\tableofcontents
+% \listoftables
+% \listoffigures
+\clearpage
+\pagenumbering{arabic}
+
+\include{part1_引言}
+
+\include{part2_快速入门}
+
+\include{part3_模式配置}
+
+\include{part4_实例操作}
+
+\include{part5_高级用户指南}
+
+\end{document}

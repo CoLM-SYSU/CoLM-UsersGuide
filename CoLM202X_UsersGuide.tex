@@ -49,6 +49,8 @@
 
 \usepackage{siunitx}
 
+\setmainfont{Times New Roman}
+
 \begin{document}
 
 \title{\huge {\bf 通用陆面模式2024版用户手册}\\
@@ -122,6 +124,7 @@ CoLM源代码的目录结构见表~\ref{subdirectories}。
 \begin{table}[!htbp]\small
 \caption{CoLM源代码目录} \label{subdirectories}
 \centering \renewcommand{\arraystretch}{1.5}
+\begin{threeparttable}
 \begin{tabular}{cp{0.8\textwidth}}
 \toprule
 \textbf{目录名称} & \textbf{说明} \\
@@ -137,11 +140,16 @@ CoLM源代码的目录结构见表~\ref{subdirectories}。
 \texttt{postprocess} & 后处理程序，主要用于将分块输出的变量文件合并成一个整体 \\
 \bottomrule
 \end{tabular}
+\begin{tablenotes}
+\footnotesize
+\item[1] CaMa-Flood (Catchment-based Macro-scale Floodplain) 是模拟大陆尺度河道径流过程的水动力学模型。
+\end{tablenotes} 
+\end{threeparttable}
 \end{table}
 
 \subsection{编译和运行}\label{comprun}
 
-CoLM的编译和运行分为软件环境的配置、数据的准备和模式运行三个主要步骤。假设代码放置的根目录为 \texttt{\$CoLMRoot}.
+CoLM的编译和运行分为软件环境的配置、数据的准备和模式运行三个主要步骤。假设代码放置的根目录为 \texttt{\$CoLMRoot}\footnote{\texttt{\$CoLMRoot}为\texttt{Shell}编程中变量值的写法，其中\texttt{CoLMRoot}为变量名，变量名前加\$指变量的值。}.
 
 \textbf{第1步}，软件环境的配置。
 
@@ -152,10 +160,10 @@ CoLM在Linux操作系统下运行，其软件需求为：
 \setlength{\parsep}{0pt}
 \setlength{\parskip}{0pt}
     \item Fortran编译器；
-    \item MPI（Message Passing Interface）软件包；
-    \item NetCDF（Network Common Data Form）软件包；
-    \item LAPACK（Linear Algebra PACKage）软件包；
-    \item BLAS（Basic Linear Algebra Subprograms）软件包。
+    \item MPI（Message Passing Interface）软件包 \footnote{MPI是消息传递接口规范，CoLM中使用满足这些规范的软件库（如MPICH）来实现多个计算核心的并行。}；
+    \item NetCDF（Network Common Data Form）软件包 \footnote{NetCDF是一个数据格式软件库，支持创建和读写以数组为内容的科学数据文件。}；
+    \item LAPACK（Linear Algebra PACKage）软件包\footnote{LAPACK提供了求解线性方程组、线性方程组的最小二乘解、特征值问题和奇异值问题的程序}；
+    \item BLAS（Basic Linear Algebra Subprograms）软件包 \footnote{BLAS是执行基本向量和矩阵运算的标准代码库。}。
 \end{itemize}
 \end{quote}
 
@@ -701,7 +709,7 @@ DEF\_Aerosol\_Clim & 逻辑型 & 读入气候态的气溶胶数据（TRUE）或�
 \multicolumn{3}{l}{DEF\_precip\_phase\_discrimination\_scheme} \\
 （接上行）& 字符串 & 降水相态拆分方案，其值分别代表：`I'：湿球温度方案；`II'：CLM5方案；`III'：PSY方案；`IV'：单阈值方案。默认为`II' \\
 DEF\_SPLIT\_SOILSNOW & 逻辑型 & 数值为TRUE时，分开模拟最上层的土壤和积雪，包括太阳吸收、感热/潜热、地表温度(包含相变)、地热通量和地面蒸发/凝结/升华/冻结等过程，该方案会直接影响季节性积雪和融雪过程。默认为FALSE \\
-DEF\_VEG\_SNOW & 逻辑型 & 值为TRUE时，打开植被积雪模块。打开该模块时建议使用去掉积雪影响的LAI (snow-free LAI)，打开后将考虑植被叶片积雪过程(包括叶片积雪截留、掉落)、叶片储热、叶片截留相态变化等过程。默认为FALSE \\
+DEF\_VEG\_SNOW & 逻辑型 & 值为TRUE时，打开植被积雪模块。打开该模块时建议使用去掉积雪影响的LAI (snow-free LAI)，打开后将考虑植被叶片积雪过程(包括叶片积雪截留、掉落)、叶片储热、叶片截留相态变化，以及叶片积雪对其光学属性的影响。默认为FALSE \\
 \midrule
 
 \textbf{4. 植被相关过程} && \\

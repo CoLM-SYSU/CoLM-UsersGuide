@@ -6,12 +6,12 @@
 ! (1) Casename, domain, time period and step, directories, resolutions
 
    DEF_CASE_NAME = 'Global_Grid_2x2_PFT_VG_BGC'
-   
+
    DEF_domain%edges =  -90.0
    DEF_domain%edgen =   90.0
    DEF_domain%edgew = -180.0
    DEF_domain%edgee =  180.0
-   
+
    DEF_simulation_time%greenwich     = .TRUE.
    DEF_simulation_time%start_year    = 1980
    DEF_simulation_time%start_month   = 1
@@ -28,11 +28,11 @@
    DEF_simulation_time%spinup_repeat = 1
 
    DEF_simulation_time%timestep      = 1800.
-   
+
    DEF_dir_rawdata = '/path/to/CoLMrawdata/'
    DEF_dir_runtime = '/path/to/CoLMruntime/'
    DEF_dir_output  = '/path/to/cases/'
-   
+
    DEF_GRIDBASED_lon_res = 2.5
    DEF_GRIDBASED_lat_res = 1.875
 
@@ -47,7 +47,7 @@
 ! (3) Makeing surface data
 
    DEF_LC_YEAR = 2005   ! using land cover type data in 2005
-   
+
    DEF_LANDONLY            = .true.  ! only land surface is simulated
    DEF_USE_SOILPAR_UPS_FIT = .true.  ! FIT algorithm in upscaling
    DEF_LAI_MONTHLY         = .true.  ! monthly averaged LAI is used
@@ -57,11 +57,11 @@
 ! (4) Makeing initial data
 
    DEF_USE_SoilInit  = .false. ! cold start for soil state
-   DEF_file_SoilInit = 'null '
-   
+   DEF_file_SoilInit = 'null'
+
    DEF_USE_SnowInit  = .false. ! cold start for snow state
-   DEF_file_SnowInit = 'null '
-   
+   DEF_file_SnowInit = 'null'
+
    DEF_USE_CN_INIT   = .true.  ! hot start for bgc
    DEF_file_cn_init  = '/path/to/CoLMruntime/cnsteadystate.nc'
 
@@ -70,57 +70,57 @@
 
    ! ---- Canopy Interception Scheme ----
    DEF_Interception_scheme         = 1 ! CoLM interception scheme
-   
+
    ! ---- Soil Thermal Parameters ----
    DEF_THERMAL_CONDUCTIVITY_SCHEME = 4 ! Balland and Arp (2005)
-   
+
    ! ---- Soil Surface Resistance ----
    DEF_RSS_SCHEME                  = 1 ! Swenson and Lawrence (2014)
-   
+
    ! ---- Hydrology Module ----
    DEF_USE_VariablySaturatedFlow = .true. ! variably saturated flow
    DEF_USE_SUPERCOOL_WATER       = .true. ! supercooled soil water
    DEF_Runoff_SCHEME             = 3      ! scheme from Simple VIC
-   
+
    ! ---- Ozone Module ----
    DEF_USE_OZONESTRESS = .false. ! ozone stress is not used
-   
+
    ! ---- SNICAR ----
    DEF_USE_SNICAR     = .true.   ! using SNICAR model
    DEF_Aerosol_Readin = .true.   ! reading aerosol data
    DEF_Aerosol_Clim   = .false.  ! yearly changed aerosol data
-   
+
    ! ---- Rain -Snow Partitioning Scheme ----
    DEF_precip_phase_discrimination_scheme = 'I' ! Wet -Bulb Temperature
-   
+
    ! ---- CO2 Path From CMIP6 Future Scenario ----
-   DEF_SSP = '585 '
-   
+   DEF_SSP = '585'
+
     ---- Plant Hydraulics ----
    DEF_USE_PLANTHYDRAULICS = .true. ! using plant hydraulics model
-   
+
    ! ---- WUE Stomata Model ----
    DEF_USE_WUEST           = .true. ! using WUE Stomatal Model
-   
+
    ! ---- Dynamic Lake Depth ----
    DEF_USE_Dynamic_Lake    = .true. ! using dynamic lake depth
 
 ! --------------------------------------------------------------------
 ! (6) Offline forcing
 
-   DEF_forcing_namelist = '/path/to/CRUJRA.nml '
+   DEF_forcing_namelist = '/path/to/CRUJRA.nml'
 
 ! --------------------------------------------------------------------
 ! (7) Restart and History
 
-   DEF_WRST_FREQ = 'MONTHLY '    ! write restart file every month
-   
+   DEF_WRST_FREQ = 'MONTHLY'     ! write restart file every month
+
    DEF_hist_lon_res = 2.5        ! longitude resolution for history
    DEF_hist_lat_res = 1.875      ! latitude  resolution for history
-   
-   DEF_HIST_FREQ    = 'MONTHLY ' ! write history file every month
-   DEF_HIST_groupby = 'YEAR '    ! put one year's data in single file
-   
+
+   DEF_HIST_FREQ    = 'MONTHLY'  ! write history file every month
+   DEF_HIST_groupby = 'YEAR'     ! put one year's data in single file
+
    DEF_hist_vars_out_default = .true. ! output all variables
 
 /
